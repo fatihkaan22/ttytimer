@@ -1,5 +1,12 @@
 # ttytimer
 
+Same as mbarbar's ttytimer but tweaked (disabled) some features;
+
+* Blinking disabled
+* Starting time at the bottom (datewin) is disabled
+
+---
+
 ttytimer is a fork of tty-clock by xorg62 which modifies the
 original project to be a timer, as the name suggests.
 

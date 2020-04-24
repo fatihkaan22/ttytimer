@@ -108,23 +108,23 @@ void init(void) {
                                     ttyclock->geo.y);
         if (ttyclock->option.box) box(ttyclock->framewin, 0, 0);
 
-        if (ttyclock->option.bold) wattron(ttyclock->framewin, A_BLINK);
+        /* if (ttyclock->option.bold) wattron(ttyclock->framewin, A_BLINK); */
 
         /* Create the date win */
-        ttyclock->datewin = newwin(DATEWINH, strlen(ttyclock->date.timestr) + 2,
-                                   ttyclock->geo.x + ttyclock->geo.h - 1,
-                                   ttyclock->geo.y + (ttyclock->geo.w / 2) -
-                                   (strlen(ttyclock->date.timestr) / 2) - 1);
+        /* ttyclock->datewin = newwin(DATEWINH, strlen(ttyclock->date.timestr) + 2, */
+        /*                            ttyclock->geo.x + ttyclock->geo.h - 1, */
+        /*                            ttyclock->geo.y + (ttyclock->geo.w / 2) - */
+        /*                            (strlen(ttyclock->date.timestr) / 2) - 1); */
 
         if (ttyclock->option.box) box(ttyclock->datewin, 0, 0);
 
-        clearok(ttyclock->datewin, True);
+        /* clearok(ttyclock->datewin, True); */
 
         set_center();
 
         nodelay(stdscr, True);
 
-        wrefresh(ttyclock->datewin);
+        /* wrefresh(ttyclock->datewin); */
 
         wrefresh(ttyclock->framewin);
 }
@@ -187,8 +187,8 @@ void draw_number(int n, int x, int y, unsigned int color) {
                         ++x;
                 }
 
-                if (ttyclock->option.bold) wattron(ttyclock->framewin, A_BLINK);
-                else wattroff(ttyclock->framewin, A_BLINK);
+                /* if (ttyclock->option.bold) wattron(ttyclock->framewin, A_BLINK); */
+                /* else wattroff(ttyclock->framewin, A_BLINK); */
 
                 wbkgdset(ttyclock->framewin,
                          COLOR_PAIR(number[n][i/2] * color));
@@ -202,11 +202,12 @@ void draw_clock(void) {
         chtype dotcolor = COLOR_PAIR(1);
         unsigned int numcolor = 1;
 
+				// blinkink disabled
         /* Change the colours to blink at certain times. */
-        if (time(NULL) % 2 == 0) {
-                dotcolor = COLOR_PAIR(2);
-                if (time_is_zero()) numcolor = 2;
-        }
+        /* if (time(NULL) % 2 == 0) { */
+        /*         dotcolor = COLOR_PAIR(2); */
+        /*         if (time_is_zero()) numcolor = 2; */
+        /* } */
 
         /* Draw hour numbers */
         draw_number(ttyclock->date.hour[0], 1, 1, numcolor);
@@ -222,12 +223,12 @@ void draw_clock(void) {
         draw_number(ttyclock->date.minute[1], 1, 27, numcolor);
 
         /* Draw the date */
-        if (ttyclock->option.bold) wattron(ttyclock->datewin, A_BOLD);
-        else wattroff(ttyclock->datewin, A_BOLD);
+        /* if (ttyclock->option.bold) wattron(ttyclock->datewin, A_BOLD); */
+        /* else wattroff(ttyclock->datewin, A_BOLD); */
 
-        wbkgdset(ttyclock->datewin, (COLOR_PAIR(2)));
-        mvwprintw(ttyclock->datewin, (DATEWINH / 2), 1, ttyclock->date.timestr);
-        wrefresh(ttyclock->datewin);
+        /* wbkgdset(ttyclock->datewin, (COLOR_PAIR(2))); */
+        /* mvwprintw(ttyclock->datewin, (DATEWINH / 2), 1, ttyclock->date.timestr); */
+        /* wrefresh(ttyclock->datewin); */
 
         /* Draw second frame. */
         /* Again 2 dot for number separation */
@@ -247,10 +248,10 @@ void clock_move(int x, int y, int w, int h) {
         werase(ttyclock->framewin);
         wrefresh(ttyclock->framewin);
 
-        wbkgdset(ttyclock->datewin, COLOR_PAIR(0));
-        wborder(ttyclock->datewin, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
-        werase(ttyclock->datewin);
-        wrefresh(ttyclock->datewin);
+        /* wbkgdset(ttyclock->datewin, COLOR_PAIR(0)); */
+        /* wborder(ttyclock->datewin, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '); */
+        /* werase(ttyclock->datewin); */
+        /* wrefresh(ttyclock->datewin); */
 
         /* Frame win move */
         mvwin(ttyclock->framewin, (ttyclock->geo.x = x), (ttyclock->geo.y = y));
@@ -258,19 +259,19 @@ void clock_move(int x, int y, int w, int h) {
                 (ttyclock->geo.w = w));
 
         /* Date win move */
-        mvwin(ttyclock->datewin,
-              ttyclock->geo.x + ttyclock->geo.h - 1,
-              ttyclock->geo.y + (ttyclock->geo.w / 2)
-              - (strlen(ttyclock->date.timestr) / 2) - 1);
-        wresize(ttyclock->datewin, DATEWINH,
-                strlen(ttyclock->date.timestr) + 2);
+        /* mvwin(ttyclock->datewin, */
+        /*       ttyclock->geo.x + ttyclock->geo.h - 1, */
+        /*       ttyclock->geo.y + (ttyclock->geo.w / 2) */
+        /*       - (strlen(ttyclock->date.timestr) / 2) - 1); */
+        /* wresize(ttyclock->datewin, DATEWINH, */
+        /*         strlen(ttyclock->date.timestr) + 2); */
 
-        if (ttyclock->option.box) box(ttyclock->datewin,  0, 0);
+        /* if (ttyclock->option.box) box(ttyclock->datewin,  0, 0); */
 
         if (ttyclock->option.box) box(ttyclock->framewin, 0, 0);
 
         wrefresh(ttyclock->framewin);
-        wrefresh(ttyclock->datewin); 
+        /* wrefresh(ttyclock->datewin); */ 
 }
 
 void set_second(void) {
@@ -296,21 +297,21 @@ void set_box(Bool b) {
         ttyclock->option.box = b;
 
         wbkgdset(ttyclock->framewin, COLOR_PAIR(0));
-        wbkgdset(ttyclock->datewin, COLOR_PAIR(0));
+        /* wbkgdset(ttyclock->datewin, COLOR_PAIR(0)); */
 
         if(ttyclock->option.box) {
                 wbkgdset(ttyclock->framewin, COLOR_PAIR(0));
-                wbkgdset(ttyclock->datewin, COLOR_PAIR(0));
+                /* wbkgdset(ttyclock->datewin, COLOR_PAIR(0)); */
                 box(ttyclock->framewin, 0, 0);
-                box(ttyclock->datewin,  0, 0);
+                /* box(ttyclock->datewin,  0, 0); */
         } else {
                 wborder(ttyclock->framewin, ' ', ' ', ' ', ' ', ' ', ' ',
                         ' ', ' ');
-                wborder(ttyclock->datewin, ' ', ' ', ' ', ' ', ' ', ' ',
-                        ' ', ' ');
+                /* wborder(ttyclock->datewin, ' ', ' ', ' ', ' ', ' ', ' ', */
+                        /* ' ', ' '); */
         }
 
-        wrefresh(ttyclock->datewin);
+        /* wrefresh(ttyclock->datewin); */
         wrefresh(ttyclock->framewin);
 }
 
@@ -483,7 +484,7 @@ int main(int argc, char **argv) {
         }
 
         init();
-        attron(A_BLINK);
+        /* attron(A_BLINK); */
         while (ttyclock->running) {
                 draw_clock();
                 key_event();
