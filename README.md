@@ -18,7 +18,7 @@ original project to be a timer, as the name suggests.
 usage : %s [-xbvih] [-C color] hh:mm:ss
     no parameter      Timer mode (count up)
         -x            Show box
-        -d            Show starting time\n"
+        -d            Show starting time
         -C color      Set the clock color
            color  ==  black | red | green
                       | yellow | blue | magenta
