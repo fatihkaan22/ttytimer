@@ -1,9 +1,11 @@
 # ttytimer
 
-Same as mbarbar's ttytimer but tweaked (disabled) some features;
+Same as mbarbar's ttytimer but tweaked, added and removed some features;
 
-* Blinking disabled
-* Starting time at the bottom (datewin) is disabled
+* Stopwatch mode added (count up, when called with no parameter)
+* Space button mapped to stop/resume timer
+* Blinking of dots each second disabled
+* Starting time at the bottom (datewin) is disabled by default
 
 ---
 
@@ -14,20 +16,22 @@ original project to be a timer, as the name suggests.
 
 ```
 usage : %s [-xbvih] [-C color] hh:mm:ss
+    no parameter      Timer mode (count up)
         -x            Show box
+        -d            Show starting time\n"
         -C color      Set the clock color
            color  ==  black | red | green
                       | yellow | blue | magenta
                       | cyan | white
-        -b            Use bold colors
         -v            Show ttytimer version
         -h            Show this page
 ```
 
 ### At runtime
 ```
-[qQ] : quit
-[rR] : restart
+[qQ]    : quit
+[rR]    : restart
+[space] : stop
 ```
 
 ## Installation
@@ -50,8 +54,3 @@ To install without `toot`,
 ```
 make install TOOT=no
 ```
-
-## TODO
-1. Option to count up rather than just down.
-1. Man page - including detailed description of time format.
-

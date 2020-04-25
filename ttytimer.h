@@ -33,70 +33,72 @@
 #ifndef TTYCLOCK_H_INCLUDED
 #define TTYCLOCK_H_INCLUDED
 
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <assert.h>
+#include <errno.h>
+#include <getopt.h>
+#include <ncurses.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <time.h>
-#include <signal.h>
-#include <ncurses.h>
 #include <unistd.h>
-#include <getopt.h>
 
 /* Macro */
 #define NORMFRAMEW 35
-#define SECFRAMEW  54
-#define DATEWINH   3
+#define SECFRAMEW 54
+#define DATEWINH 3
 /* Maximum number of digits in a time string, hh:mm:ss. */
 #define N_TIME_DIGITS 6
 
 typedef enum { False, True } Bool;
 
 /* Global ttyclock struct */
-typedef struct
-{
-        /* while() boolean */
-        Bool running;
+typedef struct {
+  /* while() boolean */
+  Bool running;
 
-        /* terminal variables */ 
-        SCREEN *ttyscr;
-        int bg;
+  /* for stopwatch mode */
+  Bool stopped;
 
-        /* Running option */
-        struct
-        {
-                Bool box;
-                int color;
-                Bool bold;
-        } option;
+  /* terminal variables */
+  SCREEN *ttyscr;
+  int bg;
 
-        /* Clock geometry */
-        struct
-        {
-                int x, y, w, h;
-                /* For rebound use (see clock_rebound())*/
-                int a, b;
-        } geo;
+  /* Running option */
+  struct {
+    Bool box;
+    int color;
+    Bool stopwatch;
+    Bool datewin;
+  } option;
 
-        /* Date content ([2] = number by number) */
-        int initial_digits[N_TIME_DIGITS];
-        struct
-        {
-                unsigned int hour[2];
-                unsigned int minute[2];
-                unsigned int second[2];
-                char timestr[9];  /* hh:mm:ss */
-        } date;
+  /* Clock geometry */
+  struct {
+    int x, y, w, h;
+    /* For rebound use (see clock_rebound())*/
+    int a, b;
+  } geo;
 
-        /* time.h utils */
-        struct tm *tm;
-        time_t lt;
+  /* Date content ([2] = number by number) */
+  int initial_digits[N_TIME_DIGITS];
+  struct {
+    unsigned int hour[2];
+    unsigned int minute[2];
+    unsigned int second[2];
+    char timestr[9]; /* hh:mm:ss */
+  } date;
 
-        /* Clock member */
-        WINDOW *framewin;
-        WINDOW *datewin;
+  char inital_timestr[9];
+
+  /* time.h utils */
+  struct tm *tm;
+  time_t lt;
+
+  /* Clock member */
+  WINDOW *framewin;
+  WINDOW *datewin;
 
 } ttyclock_t;
 
@@ -110,24 +112,24 @@ void clock_move(int x, int y, int w, int h);
 void set_second(void);
 void set_center(void);
 void set_box(Bool b);
+void set_datewin(void);
 void key_event(void);
 
 /* Global variable */
 ttyclock_t *ttyclock;
 
 /* Number matrix */
-const Bool number[][15] =
-{
-        {1,1,1,1,0,1,1,0,1,1,0,1,1,1,1}, /* 0 */
-        {0,0,1,0,0,1,0,0,1,0,0,1,0,0,1}, /* 1 */
-        {1,1,1,0,0,1,1,1,1,1,0,0,1,1,1}, /* 2 */
-        {1,1,1,0,0,1,1,1,1,0,0,1,1,1,1}, /* 3 */
-        {1,0,1,1,0,1,1,1,1,0,0,1,0,0,1}, /* 4 */
-        {1,1,1,1,0,0,1,1,1,0,0,1,1,1,1}, /* 5 */
-        {1,1,1,1,0,0,1,1,1,1,0,1,1,1,1}, /* 6 */
-        {1,1,1,0,0,1,0,0,1,0,0,1,0,0,1}, /* 7 */
-        {1,1,1,1,0,1,1,1,1,1,0,1,1,1,1}, /* 8 */
-        {1,1,1,1,0,1,1,1,1,0,0,1,1,1,1}, /* 9 */
+const Bool number[][15] = {
+    {1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1}, /* 0 */
+    {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1}, /* 1 */
+    {1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1}, /* 2 */
+    {1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}, /* 3 */
+    {1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1}, /* 4 */
+    {1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1}, /* 5 */
+    {1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1}, /* 6 */
+    {1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1}, /* 7 */
+    {1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1}, /* 8 */
+    {1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}, /* 9 */
 };
 
 #endif /* TTYCLOCK_H_INCLUDED */
