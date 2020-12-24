@@ -3,6 +3,7 @@
 Same as mbarbar's ttytimer but tweaked, added and removed some features;
 
 * Stopwatch mode added (count up, when called with no parameter)
+* Time difference mode: timer for `given time - now`
 * Space button mapped to stop/resume timer
 * Blinking of dots each second disabled
 * Starting time at the bottom (datewin) is disabled by default

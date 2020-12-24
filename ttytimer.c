@@ -48,6 +48,7 @@ static bool time_is_zero(void) {
 static void usage(char *argv0, int exit_code) {
   printf("usage : %s [-xbvih] [-C color] hh:mm:ss\n"
          "    no parameter      Stopwatch mode (count up)\n"
+         "        -t            Timer: difference between given time.\n"
          "        -x            Show box\n"
          "        -d            Show starting time\n"
          "        -C color      Set the clock color\n"
@@ -463,11 +464,126 @@ static void parse_time_arg(char *time) {
   set_datewin();
 }
 
+void time_str_to_arr(char *timeStr, int digits[]) {
+		for (int i = 0; i < N_TIME_DIGITS; ++i)
+			digits[i] = 0;
+
+		int i = 0, remaining = 2;
+		while (*timeStr != '\0') {
+			if (isdigit(*timeStr)) {
+				if (remaining == 0) {
+					puts("Too many digits in time argument");
+					exit(EXIT_FAILURE);
+				}
+
+				digits[i] = *timeStr - '0';
+				++i;
+				--remaining;
+			} else if (*timeStr == ':') {
+				i += remaining;
+				remaining = 2;
+			} else {
+				puts("Invalid character in time argument");
+				exit(EXIT_FAILURE);
+			}
+
+			++timeStr;
+		}
+}
+
+
+void difference_between_time_period(int start[],
+                                 int stop[],
+                                 int diff[]) {
+	// seconds first digit
+	while(stop[5] > start[5]) {
+		--start[4];
+		start[5] += 10;
+	}
+	diff[5] = start[5] - stop[5];
+	// seconds second digit
+	while(stop[4] > start[4]) {
+		--start[3];
+		start[4] += 6;
+	}
+	diff[4] = start[4] - stop[4];
+	// minutes first digit
+	while(stop[3] > start[3]) {
+		--start[2];
+		start[3] += 10;
+	}
+	diff[3] = start[3] - stop[3];
+	// minutes second digit
+	while(stop[2] > start[2]) {
+		--start[1];
+		start[2] += 6;
+	}
+	diff[2] = start[2] - stop[2];
+	// hours first digit
+	while(stop[1] > start[1]) {
+		--start[0];
+		start[1] += 10;
+	}
+	diff[1] = start[1] - stop[1];
+	diff[0] = start[0] - stop[0];
+
+}
+
+
+
+void time_difference(char *timeStr) {
+	int digits[N_TIME_DIGITS];
+	time_str_to_arr(timeStr, digits);
+
+	time_t t = time(NULL);
+  struct tm tm = *localtime(&t);
+
+	int digitsNow[N_TIME_DIGITS];
+
+	digitsNow[0] = tm.tm_hour / 10;
+	digitsNow[1] = tm.tm_hour % 10;
+	digitsNow[2] = tm.tm_min / 10;
+	digitsNow[3] = tm.tm_min % 10;
+	digitsNow[4] = tm.tm_sec / 10;
+	digitsNow[5] = tm.tm_sec % 10;
+
+	int diff[N_TIME_DIGITS];
+	difference_between_time_period(digits, digitsNow, diff);
+
+	int negative = 0;
+	for (int i = 0; i < N_TIME_DIGITS; ++i) {
+		if (diff[i] < 0) {
+			negative = 1;
+			break;
+		}
+	}
+
+	int hour_24[] = {2,4,0,0,0,0};
+	if (negative) {
+		difference_between_time_period(digitsNow, digits, diff);
+		difference_between_time_period(hour_24, diff, diff);
+	}
+
+
+	timeStr[0] = diff[0] + '0';
+	timeStr[1] = diff[1] + '0';
+	timeStr[2] = ':';
+	timeStr[3] = diff[2] + '0';
+	timeStr[4] = diff[3] + '0';
+	timeStr[5] = ':';
+	timeStr[6] = diff[4] + '0';
+	timeStr[7] = diff[5] + '0';
+	timeStr[8] = '\0'; 
+}
+
+
+
+
+
 void set_datewin(void) {
   if (ttyclock->option.stopwatch || !ttyclock->option.datewin) {
     strcpy(ttyclock->date.timestr, "        ");
   } else {
-    printf("hey");
     strcpy(ttyclock->date.timestr, ttyclock->inital_timestr);
   }
 }
@@ -509,7 +625,7 @@ int main(int argc, char **argv) {
   atexit(cleanup);
 
   int color;
-  while ((c = getopt(argc, argv, "vdhxC:")) != -1) {
+  while ((c = getopt(argc, argv, "tvdhxC:")) != -1) {
     switch (c) {
     case 'h':
       usage(argv[0], EXIT_SUCCESS);
@@ -531,6 +647,12 @@ int main(int argc, char **argv) {
     case 'x':
       ttyclock->option.box = True;
       break;
+		case 't':
+			if (argc != 3) {
+				usage(argv[0], EXIT_FAILURE);
+			}
+			time_difference(argv[optind]);
+			break;
     default:
       usage(argv[0], EXIT_FAILURE);
       break;
